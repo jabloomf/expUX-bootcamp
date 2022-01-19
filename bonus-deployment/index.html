@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Pull Request and Deployment Process</title>
+    <link rel="stylesheet" href="./style.css" />
+
+    <style>
+      hr {
+        margin: 40px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <section>
+      <h2>Pull Requests (PRs)</h2>
+      <div>
+        A pull request can be completed to push your code into the master branch of the UX codebase. You can commit your changes from VSCode
+        and create a pull request that must be reviewed before it can be completed.
+        <ol>
+          <li>
+            View PRs and create PRs
+            <a href="https://experimentation.visualstudio.com/Analysis%20and%20Experimentation/_git/ExperimentationUI/pullrequests?_a=mine"
+              >here.</a
+            >
+          </li>
+          <li>PR descriptions must be filled out with all the designated sections when creating a PR.</li>
+          <li>
+            PRs must then be sent to a feature buddy to ensure the changes are working as intended. Ask the feature buddy to click the
+            approve button.
+          </li>
+          <li>
+            PRs must also be brought to the UX team PR review meeting to ensure the changes align with UX coding practices. One member of
+            the core UX team must also click the approve button.
+          </li>
+          <li>After getting both of those approvals, you can click the complete button to merge the PR to the master branch.</li>
+        </ol>
+      </div>
+      When the master build completes with your merged PR, the changes are automatically deployed to a
+      <a
+        href="https://ms.portal.azure.com/#@microsoft.onmicrosoft.com/resource/subscriptions/dad45786-32e5-4ef3-b90e-8e0838fbadb6/resourceGroups/ExP/providers/Microsoft.Storage/storageAccounts/expassets/overview"
+        >CDN</a
+      >
+      , however these changes are not live in production until deployed.
+    </section>
+    <hr />
+    <section>
+      <h2>Deployments</h2>
+      <div>
+        After merging your changes to master, setup a release to deploy your changes to production.
+        <ol>
+          <li>View your release</li>
+          <ul>
+            <li>
+              <a
+                href="https://experimentation.visualstudio.com/Analysis%20and%20Experimentation/_release?definitionId=383&view=mine&_a=releases"
+                >Releases</a
+              >
+            </li>
+            <li>Your release will trigger automatically after your PR is completed.</li>
+            <li>
+              Some core scenario tests will run on your release to ensure the scenarios are still working as intended with your changes.
+            </li>
+          </ul>
+          <li>Get approval to deploy your changes to staging</li>
+          The next step in the deployment is deploying your changes to the staging environment. The staging environment will always run on
+          production code and exists in case there is a need to rollback a deployment. You will need an approval before you deploy your
+          release to the staging environment. See the steps below for the approval process.
+          <ul>
+            <li>View the build that contains your latest changes</li>
+            <li>
+              <a href="https://experimentation.visualstudio.com/Analysis%20and%20Experimentation/_build?definitionId=604&_a=summary"
+                >Build pipeline</a
+              >
+            </li>
+            <li>Click on your build</li>
+            <li>Navigate to Jobs -> Phase 1 -> Version Project file</li>
+            <li>The last output line in this Version Project file will contain version in the format v0.0.000 (v.4.0.1154 for example).</li>
+            <li>Append this version as a query parameter in a Control Tower and Studio UX to verify your changes.</li>
+            <ul>
+              <li>
+                Control tower
+                <pre>https://exp.microsoft.com/?workspaceId=a5766fee-9478-488b-9fc0-64d1ad72c290&_version=[version]</pre>
+              </li>
+              <li>
+                Studio
+                <pre>https://exp.microsoft.com/workspaces/d0b5adff-df5f-4199-bdd9-31b28eb33507?_version=[version]</pre>
+              </li>
+            </ul>
+            <li>
+              Next find previous deployment and track all of the changes made after that will be taken to production with this deployment.
+            </li>
+            <ul>
+              <li>Check previous releases to see which was the last deployment to production.</li>
+              <br />
+              <img src="../assets/releases.png" alt="Past Releases" /><br />
+              <li>
+                The green check marks beside 'deploy to staging' and 'swap staging and production' indicate which releases were deployed
+                successfully. Note the build version.
+              </li>
+              <li>
+                Navigate back to the
+                <a href="https://experimentation.visualstudio.com/Analysis%20and%20Experimentation/_build?definitionId=604&_a=summary"
+                  >build pipeline</a
+                >
+                and take a screenshot of all changes pushed after the previous deployment. You can tell which changes were taken in the
+                previous deployment by the build version.
+              </li>
+              <br />
+              <img src="../assets/changes.png" alt="Changes taken in deployment" /><br />
+            </ul>
+            <li>
+              Now make a post in the UX teams channel containing a link to the release, the CT and studio links to test the release, and the
+              screenshot of the changes included in the release.
+            </li>
+            <li>
+              Once the release is approved it will automatically deploy and you must monitor this
+              <a
+                href="https://ms.portal.azure.com/#@microsoft.onmicrosoft.com/dashboard/arm/subscriptions/80d2c6c6-fa64-4ab1-8aa5-4e118c6b16ce/resourcegroups/dashboards/providers/microsoft.portal/dashboards/04c7bc5d-4cf7-4f56-927f-0de9e413b06b"
+                >dashboard.</a
+              >
+            </li>
+          </ul>
+        </ol>
+      </div>
+    </section>
+    <hr />
+  </body>
+</html>
